@@ -56,6 +56,7 @@ module.exports = {
         try {
             //Primeiro, buscar no banco de dados 
             const data = await City.findOne({ city: cityToLowerCase})
+            console.log(data)
             if (data) {
                 return res.json(data)
             } else { // Se não achar no banco de dados, buscar na api.
@@ -73,7 +74,7 @@ module.exports = {
                     last_updated: responseData.current.last_updated
                 }
                 //União entre as rotas, se não existe já salva no banco de dados
-                await postData(city, resObj)
+                await postData(cityToLowerCase, resObj)
                 return res.status(200).json(resObj)
             }
         } catch (error) {
