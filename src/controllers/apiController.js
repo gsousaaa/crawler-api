@@ -16,10 +16,11 @@ async function postData(city, resObj) {
 
 async function updateCityData(city) {
     try {
+
         const response = await axios.get(`http://api.weatherapi.com/v1/current.json?key=${process.env.API_KEY}&q=${city}&aqi=no`)
         const responseData = response.data
         const resObj = {
-            city: responseData.location.name.toUpperCase(),
+            city: responseData.location.name.toLowerCase(),
             region: responseData.location.region,
             country: responseData.location.country,
             temp_c: responseData.current.temp_c,
@@ -44,11 +45,10 @@ cron.schedule('0 9 * * *', async () => {
     }
 })
 
-
 module.exports = {
     getCityByName: async (req, res) => {
         const { city } = req.query
-        let cityToUpperCase = city.toUpperCase()
+        let cityToLowerCase = city.toLowerCase()
 
         if (!city) {
             return res.json({ error: 'Cidade não informada' })
@@ -64,7 +64,7 @@ module.exports = {
                 let responseData = response.data
 
                 const resObj = {
-                    city: responseData.location.name.toUpperCase(),
+                    city: responseData.location.name.toLowerCase(),
                     region: responseData.location.region,
                     country: responseData.location.country,
                     temp_c: responseData.current.temp_c,
@@ -98,9 +98,9 @@ module.exports = {
                 return res.status(400).json({ error: 'Data inválida' })
             }
 
-            let cityToUpperCase = city.toUpperCase()
+            let cityToLowerCase = city.toLowerCase()
             const filteredData = await City.find({
-                city: cityToUpperCase,
+                city: cityToLowerCase,
                 local_time: { // As datas devem ser maiores ou iguais que ${data} 00:00 e menores ou iguais que ${data} 23:59
                     $gte: `${initialDate} 00:00`,
                     $lte: `${finalDate} 23:59`
@@ -116,5 +116,7 @@ module.exports = {
         } catch (error) {
             return res.status(500).json({ error: 'Ocorreu um erro' })
         }
+
     },
+
 }
