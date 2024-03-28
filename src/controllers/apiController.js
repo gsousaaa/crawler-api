@@ -35,6 +35,15 @@ async function updateCityData(city) {
         console.error(`Erro ao atualizar os dados da cidade ${error}`)
     }
 }
+// horario utc para sincronizar com a maquina aws - 06:00 horário de brasilia
+cron.schedule('0 9 * * *', async () => {
+    const cities = await City.find()
+    // para cada registro c achado em cities, atualizar os dados, passando como parametro a propriedade city de c
+    for(const c of cities) {
+        await updateCityData(c.city)
+    }
+})
+
 
 module.exports = {
     getCityByName: async (req, res) => {
