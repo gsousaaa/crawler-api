@@ -14,8 +14,6 @@ async function postData(city, resObj) {
     }
 }
 
-
-
 module.exports = {
     getCityByName: async (req, res) => {
         const { city } = req.query
@@ -51,6 +49,43 @@ module.exports = {
             console.log(error)
             return res.status(404).json(error)
         }
-    }
+    },
+
+    getDataFilter: async (req, res) => {
+        const { initialDate, finalDate, city } = req.query
+
+        if (!initialDate || !finalDate || !city) {
+            return res.status(400).json({ error: 'Parametros ausentes. Verifique' })
+        }
+
+        try {
+            const startDate = new Date(initialDate)
+            const endDate = new Date(finalDate)
+
+            // Se não for um numero, a data é inválida
+            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                return res.status(400).json({ error: 'Data inválida' })
+            }
+
+            let cityToLowerCase = city.toLowerCase()
+            const filteredData = await City.find({
+                city: cityToLowerCase,
+                local_time: { // As datas devem ser maiores ou iguais que ${data} 00:00 e menores ou iguais que ${data} 23:59
+                    $gte: `${initialDate} 00:00`,
+                    $lte: `${finalDate} 23:59`
+                }
+            })
+
+            if (filteredData.length === 0) {
+                return res.status(400).json({ error: 'Não foram encontrados dados para os filtos' })
+            }
+
+            return res.status(200).json(filteredData)
+
+        } catch (error) {
+            return res.status(500).json({ error: 'Ocorreu um erro' })
+        }
+
+    },
 
 }
