@@ -14,10 +14,32 @@ async function postData(city, resObj) {
     }
 }
 
+async function updateCityData(city) {
+    try {
+        const response = await axios.get(`http://api.weatherapi.com/v1/current.json?key=${process.env.API_KEY}&q=${city}&aqi=no`)
+        const responseData = response.data
+        const resObj = {
+            city: responseData.location.name.toUpperCase(),
+            region: responseData.location.region,
+            country: responseData.location.country,
+            temp_c: responseData.current.temp_c,
+            temp_f: responseData.current.temp_f,
+            local_time: responseData.location.localtime,
+            last_updated: responseData.current.last_updated
+        }
+        // o upsert é usado para que se o registro não for achado conforme o filtro, será salvo um novo registro no banco de dados
+        await City.updateOne({ city: city }, resObj, { upsert: true })
+        console.log(`Dados de ${city} atualizados com sucesso!`)
+
+    } catch (error) {
+        console.error(`Erro ao atualizar os dados da cidade ${error}`)
+    }
+}
+
 module.exports = {
     getCityByName: async (req, res) => {
         const { city } = req.query
-        let cityToLowerCase = city.toLowerCase()
+        let cityToUpperCase = city.toUpperCase()
 
         if (!city) {
             return res.json({ error: 'Cidade não informada' })
@@ -33,7 +55,7 @@ module.exports = {
                 let responseData = response.data
 
                 const resObj = {
-                    city: responseData.location.name.toLowerCase(),
+                    city: responseData.location.name.toUpperCase(),
                     region: responseData.location.region,
                     country: responseData.location.country,
                     temp_c: responseData.current.temp_c,
@@ -67,9 +89,9 @@ module.exports = {
                 return res.status(400).json({ error: 'Data inválida' })
             }
 
-            let cityToLowerCase = city.toLowerCase()
+            let cityToUpperCase = city.toUpperCase()
             const filteredData = await City.find({
-                city: cityToLowerCase,
+                city: cityToUpperCase,
                 local_time: { // As datas devem ser maiores ou iguais que ${data} 00:00 e menores ou iguais que ${data} 23:59
                     $gte: `${initialDate} 00:00`,
                     $lte: `${finalDate} 23:59`
@@ -85,7 +107,5 @@ module.exports = {
         } catch (error) {
             return res.status(500).json({ error: 'Ocorreu um erro' })
         }
-
     },
-
 }
