@@ -55,7 +55,7 @@ module.exports = {
         }
         try {
             //Primeiro, buscar no banco de dados 
-            const data = await City.findOne({ city: city })
+            const data = await City.findOne({ city: cityToLowerCase})
             if (data) {
                 return res.json(data)
             } else { // Se não achar no banco de dados, buscar na api.
