@@ -48,16 +48,6 @@ GET [${URL}/weather/filter?city=rio de janeiro&initialDate=2024-04-01&finalDate=
 ```json
 [
     {
-        "_id": "61502a924654b566d4d03139",
-        "city": "rio de janeiro",
-        "region": "Rio de Janeiro",
-        "country": "Brazil",
-        "temp_c": 25,
-        "temp_f": 77,
-        "local_time": "2024-04-01 10:30",
-        "last_updated": "2024-04-01 10:15"
-    },
-    {
         "_id": "61502a924654b566d4d0313a",
         "city": "rio de janeiro",
         "region": "Rio de Janeiro",
@@ -66,8 +56,7 @@ GET [${URL}/weather/filter?city=rio de janeiro&initialDate=2024-04-01&finalDate=
         "temp_f": 78.8,
         "local_time": "2024-04-02 10:30",
         "last_updated": "2024-04-02 10:15"
-    },
-    ...
+    }
 ]
 ```
 
